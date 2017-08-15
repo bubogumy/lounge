@@ -258,6 +258,10 @@ kbd {
 
 #form #submit::before { content: "\f1d8"; /* http://fontawesome.io/icon/paper-plane/ */ }
 
+#session-list strong {
+	display: block;
+}
+
 #chat .invite .from::before {
 	content: "\f003"; /* http://fontawesome.io/icon/envelope-o/ */
 	color: #2ecc40;
@@ -699,6 +703,7 @@ kbd {
 	width: 100%;
 }
 
+#windows p,
 #windows label,
 #settings .error {
 	font-size: 14px;

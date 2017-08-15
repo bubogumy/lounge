@@ -370,8 +370,32 @@ function initializeClient(socket, client, token) {
 		client.unregisterPushSubscription(token);
 	});
 
-	socket.on("sign-out", () => {
-		delete client.config.sessions[token];
+	const sendSessionList = () => {
+		const sessions = _.map(client.config.sessions, (session, sessionToken) => ({
+			current: sessionToken === token,
+			active: typeof _.find(client.attachedClients, (u) => u.token === sessionToken) !== "undefined",
+			lastUse: session.lastUse,
+			ip: session.ip,
+			agent: session.agent,
+			token: sessionToken, // TODO: Ideally don't expose actual tokens to the client
+		}));
+
+		socket.emit("sessions:list", sessions);
+	};
+
+	socket.on("sessions:get", sendSessionList);
+
+	socket.on("sign-out", (tokenToSignOut) => {
+		// If no token provided, sign same client out
+		if (!tokenToSignOut) {
+			tokenToSignOut = token;
+		}
+
+		if (!(tokenToSignOut in client.config.sessions)) {
+			return;
+		}
+
+		delete client.config.sessions[tokenToSignOut];
 
 		client.manager.updateUser(client.name, {
 			sessions: client.config.sessions
@@ -381,7 +405,18 @@ function initializeClient(socket, client, token) {
 			}
 		});
 
-		socket.emit("sign-out");
+		_.map(client.attachedClients, (attachedClient, socketId) => {
+			if (attachedClient.token !== tokenToSignOut) {
+				return;
+			}
+
+			const socketToRemove = manager.sockets.of("/").connected[socketId];
+
+			socketToRemove.emit("sign-out");
+			socketToRemove.disconnect();
+		});
+
+		sendSessionList(client);
 	});
 
 	socket.join(client.id);
