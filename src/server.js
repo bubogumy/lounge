@@ -22,6 +22,9 @@ const authPlugins = [
 	require("./plugins/auth/local"),
 ];
 
+// A random number that will force clients to reload the page if it differs
+const serverHash = Math.floor(Date.now() * Math.random());
+
 var manager = null;
 
 module.exports = function() {
@@ -125,7 +128,10 @@ module.exports = function() {
 			if (config.public) {
 				performAuthentication.call(socket, {});
 			} else {
-				socket.emit("auth", {success: true});
+				socket.emit("auth", {
+					serverHash: serverHash,
+					success: true,
+				});
 				socket.on("auth", performAuthentication);
 			}
 		});
