@@ -99,11 +99,11 @@ function getStoragePath() {
 }
 
 function getPackagesPath() {
-	return path.join(this.HOME, "packages", "node_modules");
+	return path.join(this.HOME, "packages");
 }
 
 function getPackageModulePath(packageName) {
-	return path.join(Helper.getPackagesPath(), packageName);
+	return path.join(Helper.getPackagesPath(), "node_modules", packageName);
 }
 
 function ip2hex(address) {

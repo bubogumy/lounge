@@ -21,7 +21,7 @@ fs.readdir("client/themes/", (err, builtInThemes) => {
 		.forEach((theme) => themes.set(theme.name, theme));
 });
 
-fs.readdir(Helper.getPackagesPath(), (err, packages) => {
+fs.readdir(path.join(Helper.getPackagesPath(), "node_modules"), (err, packages) => {
 	if (err) {
 		return;
 	}
