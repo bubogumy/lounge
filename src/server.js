@@ -229,7 +229,6 @@ function initializeClient(socket, client, token) {
 	socket.on("disconnect", function() {
 		client.clientDetach(socket.id);
 	});
-	client.clientAttach(socket.id, token);
 
 	socket.on(
 		"input",
@@ -422,6 +421,8 @@ function initializeClient(socket, client, token) {
 	socket.join(client.id);
 
 	const sendInitEvent = (tokenToSend) => {
+		client.clientAttach(socket.id, token);
+
 		socket.emit("init", {
 			applicationServerKey: manager.webPush.vapidKeys.publicKey,
 			pushSubscription: client.config.sessions[token],
