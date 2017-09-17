@@ -303,11 +303,19 @@ Client.prototype.updateSession = function(token, ip, request) {
 		friendlyAgent += ` on ${agent.os.name} ${agent.os.version}`;
 	}
 
-	client.config.sessions[token] = _.assign({
+	client.config.sessions[token] = _.assign(client.config.sessions[token], {
 		lastUse: Date.now(),
 		ip: ip,
 		agent: friendlyAgent,
-	}, client.config.sessions[token]);
+	});
+
+	client.manager.updateUser(client.name, {
+		sessions: client.config.sessions
+	}, (err) => {
+		if (err) {
+			log.error("Failed to update sessions for", client.name, err);
+		}
+	});
 };
 
 Client.prototype.setPassword = function(hash, callback) {

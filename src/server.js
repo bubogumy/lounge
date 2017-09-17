@@ -437,14 +437,6 @@ function initializeClient(socket, client, token) {
 
 			client.updateSession(token, getClientIp(socket.request), socket.request);
 
-			client.manager.updateUser(client.name, {
-				sessions: client.config.sessions
-			}, (err) => {
-				if (err) {
-					log.error("Failed to update sessions for", client.name, err);
-				}
-			});
-
 			sendInitEvent(token);
 		});
 	} else {
